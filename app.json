@@ -1,0 +1,59 @@
+{
+  "expo": {
+    "name": "Expense Scanner",
+    "slug": "expense-scanner",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#2563EB"
+    },
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.expensescanner.app",
+      "infoPlist": {
+        "NSCameraUsageDescription": "We need camera access to scan your receipts.",
+        "NSPhotoLibraryUsageDescription": "We need photo library access to select receipt images."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#2563EB"
+      },
+      "package": "com.expensescanner.app",
+      "permissions": [
+        "CAMERA",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow Expense Scanner to access your camera to scan receipts."
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow Expense Scanner to access your photos to select receipt images."
+        }
+      ]
+    ],
+    "scheme": "expense-scanner",
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
