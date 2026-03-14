@@ -13,7 +13,6 @@ import {
 } from 'react-native';
 import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
-import * as ImageManipulator from 'expo-image-manipulator';
 import { router } from 'expo-router';
 import ScanOverlay from '../components/ScanOverlay';
 
@@ -28,23 +27,13 @@ export default function ScanScreen() {
     }
   }, []);
 
-  const processImage = async (uri: string): Promise<string> => {
-    // Resize to reduce API costs while maintaining quality for OCR
-    const manipulated = await ImageManipulator.manipulateAsync(
-      uri,
-      [{ resize: { width: 1600 } }],
-      { compress: 0.85, format: ImageManipulator.SaveFormat.JPEG },
-    );
-    return manipulated.uri;
-  };
-
   const handleCapture = async () => {
     if (!cameraRef.current || isCapturing) return;
     setIsCapturing(true);
 
     try {
       const photo = await cameraRef.current.takePictureAsync({
-        quality: 0.9,
+        quality: 0.85,
         base64: false,
       });
 
@@ -52,10 +41,9 @@ export default function ScanScreen() {
         throw new Error('Failed to capture photo');
       }
 
-      const processedUri = await processImage(photo.uri);
       router.replace({
         pathname: '/review',
-        params: { imageUri: processedUri },
+        params: { imageUri: photo.uri },
       });
     } catch (err) {
       Alert.alert(
@@ -69,16 +57,15 @@ export default function ScanScreen() {
   const handlePickFromGallery = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      quality: 0.9,
+      quality: 0.85,
       allowsEditing: true,
       aspect: [3, 4],
     });
 
     if (!result.canceled && result.assets[0]) {
-      const processedUri = await processImage(result.assets[0].uri);
       router.replace({
         pathname: '/review',
-        params: { imageUri: processedUri },
+        params: { imageUri: result.assets[0].uri },
       });
     }
   };
