@@ -42,6 +42,7 @@ export interface ExpenseClaimPayload {
   company: string;
   expenses: ExpenseClaimItem[];
   total_claimed_amount: number;
+  conversion_rate: number;
   remark?: string;
 }
 

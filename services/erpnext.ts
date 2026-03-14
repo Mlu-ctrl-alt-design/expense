@@ -130,6 +130,7 @@ export function buildExpenseClaimPayload(
     company: config.company,
     expenses,
     total_claimed_amount: totalClaimedAmount,
+    conversion_rate: 0.05954,
     remark: `Receipt from ${receipt.vendor} on ${receipt.date}`,
   };
 }
@@ -150,6 +151,7 @@ export async function submitExpenseClaim(
     company: payload.company,
     expenses: payload.expenses,
     total_claimed_amount: payload.total_claimed_amount,
+    conversion_rate: payload.conversion_rate,
     remark: payload.remark,
   };
 
