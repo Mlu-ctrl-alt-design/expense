@@ -59,6 +59,21 @@ export default function HomeScreen() {
     router.push('/scan');
   };
 
+  const handleManualEntry = () => {
+    if (!config) {
+      Alert.alert(
+        'Setup Required',
+        'Please configure your ERPNext connection first.',
+        [
+          { text: 'Cancel', style: 'cancel' },
+          { text: 'Open Settings', onPress: () => router.push('/settings') },
+        ],
+      );
+      return;
+    }
+    router.push({ pathname: '/review', params: { manual: 'true' } });
+  };
+
   const handleRetry = async (id: string) => {
     if (!config) return;
     const expense = pendingExpenses.find((e) => e.id === id);
@@ -169,6 +184,15 @@ export default function HomeScreen() {
           <Text style={styles.scanButtonSub}>
             Capture and submit to ERPNext
           </Text>
+        </TouchableOpacity>
+
+        {/* Manual entry button */}
+        <TouchableOpacity
+          style={[styles.manualButton, !isConfigured && styles.manualButtonDisabled]}
+          onPress={handleManualEntry}
+          activeOpacity={0.8}
+        >
+          <Text style={styles.manualButtonText}>✏️  Enter Manually</Text>
         </TouchableOpacity>
 
         {/* Pending expenses */}
@@ -299,12 +323,30 @@ const styles = StyleSheet.create({
     color: '#065F46',
     fontWeight: '500',
   },
+  manualButton: {
+    borderWidth: 1.5,
+    borderColor: '#2563EB',
+    borderRadius: 14,
+    paddingVertical: 14,
+    alignItems: 'center',
+    marginTop: -16,
+    marginBottom: 28,
+    backgroundColor: '#fff',
+  },
+  manualButtonDisabled: {
+    borderColor: '#93C5FD',
+  },
+  manualButtonText: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#2563EB',
+  },
   scanButton: {
     backgroundColor: '#2563EB',
     borderRadius: 20,
     padding: 28,
     alignItems: 'center',
-    marginBottom: 28,
+    marginBottom: 12,
     shadowColor: '#2563EB',
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.35,

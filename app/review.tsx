@@ -37,21 +37,43 @@ type ReviewState =
   | { type: 'ready'; receipt: ExtractedReceipt }
   | { type: 'submitting' };
 
+function emptyReceipt(): ExtractedReceipt {
+  return {
+    vendor: '',
+    date: getTodayISO(),
+    totalAmount: 0,
+    items: [],
+    category: 'General',
+    rawText: '',
+    confidence: 0,
+    imageUri: '',
+  };
+}
+
 export default function ReviewScreen() {
-  const { imageUri } = useLocalSearchParams<{ imageUri: string }>();
-  const [state, setState] = useState<ReviewState>({ type: 'extracting' });
+  const { imageUri, manual } = useLocalSearchParams<{ imageUri?: string; manual?: string }>();
+  const isManual = manual === 'true' || !imageUri;
+  const [state, setState] = useState<ReviewState>(
+    isManual ? { type: 'ready', receipt: emptyReceipt() } : { type: 'extracting' },
+  );
   const [config, setConfig] = useState<ERPNextConfig | null>(null);
 
   // Editable fields (mirroring extracted receipt for live editing)
   const [vendor, setVendor] = useState('');
-  const [date, setDate] = useState('');
+  const [date, setDate] = useState(isManual ? getTodayISO() : '');
   const [totalAmount, setTotalAmount] = useState('');
-  const [category, setCategory] = useState('');
-  const [items, setItems] = useState<ReceiptItem[]>([]);
+  const [category, setCategory] = useState('General');
+  const [items, setItems] = useState<ReceiptItem[]>(
+    isManual ? [{ description: '', amount: 0, expenseType: 'General' }] : [],
+  );
   const [showImage, setShowImage] = useState(false);
 
   useEffect(() => {
-    initializeScreen();
+    if (isManual) {
+      loadERPNextConfig().then(setConfig);
+    } else {
+      initializeScreen();
+    }
   }, [imageUri]);
 
   const initializeScreen = async () => {
@@ -122,7 +144,7 @@ export default function ReviewScreen() {
       category: category || 'General',
       rawText: originalReceipt?.rawText || '',
       confidence: originalReceipt?.confidence || 0,
-      imageUri: imageUri!,
+      imageUri: imageUri || '',
     };
   };
 
@@ -199,6 +221,13 @@ export default function ReviewScreen() {
   }
 
   if (state.type === 'error') {
+    const handleEnterManually = () => {
+      setDate(getTodayISO());
+      setCategory('General');
+      setItems([{ description: '', amount: 0, expenseType: 'General' }]);
+      setState({ type: 'ready', receipt: emptyReceipt() });
+    };
+
     return (
       <View style={styles.center}>
         <Text style={styles.errorIcon}>⚠️</Text>
@@ -206,6 +235,9 @@ export default function ReviewScreen() {
         <Text style={styles.errorMessage}>{state.message}</Text>
         <TouchableOpacity style={styles.retakeButton} onPress={handleRetakePhoto}>
           <Text style={styles.retakeButtonText}>Retake Photo</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={[styles.retakeButton, styles.manualButton]} onPress={handleEnterManually}>
+          <Text style={styles.retakeButtonText}>Enter Details Manually</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.settingsLink} onPress={() => router.push('/settings')}>
           <Text style={styles.settingsLinkText}>Open Settings</Text>
@@ -239,36 +271,51 @@ export default function ReviewScreen() {
           contentContainerStyle={styles.content}
           keyboardShouldPersistTaps="handled"
         >
-          {/* Confidence indicator */}
-          <View style={styles.card}>
-            <ConfidenceBar confidence={receipt.confidence} />
-            {receipt.confidence < 70 && (
-              <View style={styles.retakePrompt}>
-                <Text style={styles.retakePromptText}>
-                  Low confidence detected. Consider retaking the photo with better lighting.
-                </Text>
-                <TouchableOpacity onPress={handleRetakePhoto}>
-                  <Text style={styles.retakeLink}>Retake Photo</Text>
-                </TouchableOpacity>
-              </View>
-            )}
-          </View>
+          {/* Manual entry banner */}
+          {isManual && (
+            <View style={styles.manualBanner}>
+              <Text style={styles.manualBannerText}>
+                ✏️  Manual entry — fill in the receipt details below
+              </Text>
+            </View>
+          )}
 
-          {/* Receipt image preview toggle */}
-          <TouchableOpacity
-            style={styles.imageToggle}
-            onPress={() => setShowImage((v) => !v)}
-          >
-            <Text style={styles.imageToggleText}>
-              {showImage ? '▲ Hide receipt image' : '▼ Show receipt image'}
-            </Text>
-          </TouchableOpacity>
-          {showImage && (
-            <Image
-              source={{ uri: imageUri }}
-              style={styles.receiptImage}
-              resizeMode="contain"
-            />
+          {/* Confidence indicator (OCR mode only) */}
+          {!isManual && (
+            <View style={styles.card}>
+              <ConfidenceBar confidence={receipt.confidence} />
+              {receipt.confidence < 70 && (
+                <View style={styles.retakePrompt}>
+                  <Text style={styles.retakePromptText}>
+                    Low confidence detected. Consider retaking the photo with better lighting.
+                  </Text>
+                  <TouchableOpacity onPress={handleRetakePhoto}>
+                    <Text style={styles.retakeLink}>Retake Photo</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
+            </View>
+          )}
+
+          {/* Receipt image preview toggle (OCR mode only) */}
+          {!isManual && imageUri && (
+            <>
+              <TouchableOpacity
+                style={styles.imageToggle}
+                onPress={() => setShowImage((v) => !v)}
+              >
+                <Text style={styles.imageToggleText}>
+                  {showImage ? '▲ Hide receipt image' : '▼ Show receipt image'}
+                </Text>
+              </TouchableOpacity>
+              {showImage && (
+                <Image
+                  source={{ uri: imageUri }}
+                  style={styles.receiptImage}
+                  resizeMode="contain"
+                />
+              )}
+            </>
           )}
 
           {/* Core fields */}
@@ -446,12 +493,28 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '600',
   },
+  manualButton: {
+    backgroundColor: '#059669',
+  },
   settingsLink: {
     padding: 8,
   },
   settingsLinkText: {
     color: '#2563EB',
     fontSize: 14,
+  },
+  manualBanner: {
+    backgroundColor: '#ECFDF5',
+    borderRadius: 10,
+    padding: 12,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: '#A7F3D0',
+  },
+  manualBannerText: {
+    fontSize: 14,
+    color: '#065F46',
+    fontWeight: '500',
   },
   card: {
     backgroundColor: '#fff',
