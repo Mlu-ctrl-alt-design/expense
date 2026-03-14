@@ -4,7 +4,6 @@
  */
 
 import axios from 'axios';
-import * as FileSystem from 'expo-file-system';
 import { ExtractedReceipt } from '../types';
 import { parseReceiptText, calculateConfidence } from '../utils/receiptParser';
 import { mapReceiptToExpenseType } from '../utils/categoryMapper';
@@ -33,13 +32,23 @@ interface VisionAnnotateResponse {
 }
 
 /**
- * Reads an image file and returns base64-encoded content.
+ * Reads an image URI and returns base64-encoded content.
+ * Uses fetch + FileReader so expo-file-system is not required.
  */
 async function imageToBase64(imageUri: string): Promise<string> {
-  const base64 = await FileSystem.readAsStringAsync(imageUri, {
-    encoding: FileSystem.EncodingType.Base64,
+  const response = await fetch(imageUri);
+  const blob = await response.blob();
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const dataUrl = reader.result as string;
+      // dataUrl is "data:<mime>;base64,<data>" — strip the prefix
+      const base64 = dataUrl.split(',')[1];
+      resolve(base64);
+    };
+    reader.onerror = () => reject(new Error('Failed to read image file'));
+    reader.readAsDataURL(blob);
   });
-  return base64;
 }
 
 /**
