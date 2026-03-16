@@ -16,7 +16,7 @@ from frappe.utils import now_datetime, add_days, today
 
 
 def run():
-    frappe.flags.ignore_permissions = True
+    frappe.set_user("Administrator")
 
     _create_customers()
     _create_guards()
@@ -70,6 +70,7 @@ def _create_guards():
             "date_of_joining": "2022-03-15",
             "status": "Active",
             "designation": "Security Guard",
+            "company": frappe.defaults.get_global_default("company"),
             "psira_number": "PSR-001",
             "weapon_competency": 1,
             "uniform_size": "L",
@@ -82,6 +83,7 @@ def _create_guards():
             "date_of_joining": "2022-07-01",
             "status": "Active",
             "designation": "Security Guard",
+            "company": frappe.defaults.get_global_default("company"),
             "psira_number": "PSR-002",
             "weapon_competency": 0,
             "uniform_size": "M",
@@ -94,6 +96,7 @@ def _create_guards():
             "date_of_joining": "2021-11-20",
             "status": "Active",
             "designation": "Senior Security Guard",
+            "company": frappe.defaults.get_global_default("company"),
             "psira_number": "PSR-003",
             "weapon_competency": 1,
             "uniform_size": "S",
@@ -106,6 +109,7 @@ def _create_guards():
             "date_of_joining": "2020-05-10",
             "status": "Active",
             "designation": "Site Supervisor",
+            "company": frappe.defaults.get_global_default("company"),
             "psira_number": "PSR-004",
             "weapon_competency": 1,
             "uniform_size": "XL",
@@ -118,6 +122,7 @@ def _create_guards():
             "date_of_joining": "2023-02-01",
             "status": "Active",
             "designation": "Security Guard",
+            "company": frappe.defaults.get_global_default("company"),
             "psira_number": "PSR-005",
             "weapon_competency": 0,
             "uniform_size": "M",
