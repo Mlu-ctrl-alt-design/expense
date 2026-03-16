@@ -1,0 +1,57 @@
+[
+  {
+    "doctype": "Custom Field",
+    "dt": "Customer",
+    "fieldname": "contract_start_date",
+    "fieldtype": "Date",
+    "label": "Contract Start Date",
+    "insert_after": "customer_name",
+    "module": "Security Vertical"
+  },
+  {
+    "doctype": "Custom Field",
+    "dt": "Customer",
+    "fieldname": "contract_end_date",
+    "fieldtype": "Date",
+    "label": "Contract End Date",
+    "insert_after": "contract_start_date",
+    "module": "Security Vertical"
+  },
+  {
+    "doctype": "Custom Field",
+    "dt": "Customer",
+    "fieldname": "service_level_agreement",
+    "fieldtype": "Attach",
+    "label": "Service Level Agreement",
+    "insert_after": "contract_end_date",
+    "module": "Security Vertical"
+  },
+  {
+    "doctype": "Custom Field",
+    "dt": "Employee",
+    "fieldname": "psira_number",
+    "fieldtype": "Data",
+    "label": "PSIRA Registration Number",
+    "insert_after": "employee_name",
+    "module": "Security Vertical"
+  },
+  {
+    "doctype": "Custom Field",
+    "dt": "Employee",
+    "fieldname": "weapon_competency",
+    "fieldtype": "Check",
+    "label": "Weapon Competency",
+    "insert_after": "psira_number",
+    "module": "Security Vertical"
+  },
+  {
+    "doctype": "Custom Field",
+    "dt": "Employee",
+    "fieldname": "uniform_size",
+    "fieldtype": "Select",
+    "label": "Uniform Size",
+    "options": "XS\nS\nM\nL\nXL\nXXL\nXXXL",
+    "insert_after": "weapon_competency",
+    "module": "Security Vertical"
+  }
+]

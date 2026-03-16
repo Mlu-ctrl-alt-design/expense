@@ -1,0 +1,21 @@
+{
+  "doctype": "Notification",
+  "name": "Breach Incident Alert",
+  "document_type": "Incident Report",
+  "event": "New",
+  "method": "",
+  "condition": "doc.incident_type == \"Breach\"",
+  "channel": "Email",
+  "subject": "BREACH ALERT: {{ doc.site }} — {{ doc.date_time }}",
+  "message": "<p>A <strong>BREACH</strong> incident has been reported. Immediate supervisor action is required.</p>\n\n<table style=\"border-collapse: collapse; width: 100%;\">\n  <tr>\n    <td style=\"padding: 8px; border: 1px solid #ddd;\"><strong>Site</strong></td>\n    <td style=\"padding: 8px; border: 1px solid #ddd;\">{{ doc.site }}</td>\n  </tr>\n  <tr>\n    <td style=\"padding: 8px; border: 1px solid #ddd;\"><strong>Date &amp; Time</strong></td>\n    <td style=\"padding: 8px; border: 1px solid #ddd;\">{{ doc.date_time }}</td>\n  </tr>\n  <tr>\n    <td style=\"padding: 8px; border: 1px solid #ddd;\"><strong>Reporting Guard</strong></td>\n    <td style=\"padding: 8px; border: 1px solid #ddd;\">{{ doc.reporting_guard }}</td>\n  </tr>\n  <tr>\n    <td style=\"padding: 8px; border: 1px solid #ddd;\"><strong>Description</strong></td>\n    <td style=\"padding: 8px; border: 1px solid #ddd;\">{{ doc.description }}</td>\n  </tr>\n  <tr>\n    <td style=\"padding: 8px; border: 1px solid #ddd;\"><strong>Action Taken</strong></td>\n    <td style=\"padding: 8px; border: 1px solid #ddd;\">{{ doc.action_taken }}</td>\n  </tr>\n</table>\n\n<p style=\"margin-top: 16px;\">\n  <a href=\"{{ frappe.utils.get_url_to_form('Incident Report', doc.name) }}\">View Incident Report in ERPNext</a>\n</p>",
+  "send_to_all_assignees": 0,
+  "recipients": [
+    {
+      "doctype": "Notification Recipient",
+      "receiver_by_document_field": "site_supervisor",
+      "receiver_by_role": ""
+    }
+  ],
+  "attach_print": 0,
+  "enabled": 1
+}

@@ -1,0 +1,81 @@
+{
+  "doctype": "DocType",
+  "name": "Incident Report",
+  "module": "Security Vertical",
+  "autoname": "INC-.YYYY.-.#####",
+  "naming_rule": "Expression",
+  "description": "Core daily operations record for security incidents at client sites.",
+  "track_changes": 1,
+  "fields": [
+    {
+      "fieldname": "date_time",
+      "fieldtype": "Datetime",
+      "label": "Date & Time",
+      "reqd": 1,
+      "default": "Now",
+      "in_list_view": 1,
+      "in_standard_filter": 1
+    },
+    {
+      "fieldname": "incident_type",
+      "fieldtype": "Select",
+      "label": "Incident Type",
+      "options": "Theft\nFire\nBreach\nMedical\nRoutine",
+      "reqd": 1,
+      "in_list_view": 1,
+      "in_standard_filter": 1
+    },
+    {
+      "fieldname": "site",
+      "fieldtype": "Link",
+      "label": "Site",
+      "options": "Site Location",
+      "reqd": 1,
+      "in_list_view": 1,
+      "in_standard_filter": 1
+    },
+    {
+      "fieldname": "reporting_guard",
+      "fieldtype": "Link",
+      "label": "Reporting Guard",
+      "options": "Employee",
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "description",
+      "fieldtype": "Text Editor",
+      "label": "Description"
+    },
+    {
+      "fieldname": "action_taken",
+      "fieldtype": "Small Text",
+      "label": "Action Taken"
+    },
+    {
+      "fieldname": "attachments",
+      "fieldtype": "Attach Image",
+      "label": "Attachments"
+    }
+  ],
+  "permissions": [
+    {
+      "role": "System Manager",
+      "read": 1,
+      "write": 1,
+      "create": 1,
+      "delete": 1
+    },
+    {
+      "role": "HR Manager",
+      "read": 1,
+      "write": 1,
+      "create": 1
+    },
+    {
+      "role": "HR User",
+      "read": 1,
+      "write": 1,
+      "create": 1
+    }
+  ]
+}
